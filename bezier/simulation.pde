@@ -38,8 +38,6 @@ class Robot {
       eF = errP.scale(1/errP.getMagnitude());
     else
       eF = errP;
-    println("rot: " + rot);
-    println("targetRot: " + targetRot);
     double r = rot - targetRot;
     r %= 2*PI;
     if(r > 0)

@@ -11,6 +11,9 @@
  - drag points around to edit their location
  - pressing "DELETE" key will delete point closest to the mouse pointer
 
+### Undo
+ - press "CTRL+Z" to undo changes done to points
+
 ### Editing speed
  - hold "UP" and "DOWN arrow keys
 
@@ -41,6 +44,7 @@
 ### Robot PID Simulation
  - press "SPACE" to run a simulation of the robot following the position
  - editing robot values
+   - press "p" to edit pid constants
    - change data on specific robot in data/robot.stats
 
 ### [Papers used for Bezier Curve research](https://www.cs.cornell.edu/courses/cs4620/2017sp/slides/16spline-curves.pdf)
