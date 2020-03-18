@@ -7,6 +7,7 @@ PImage bg, sOff, sOn, botrot;
 Vector2D mousePrev, mouseSpecify;
 int prevAllPointsPrevInd = 0;
 int mouseInd, pointInd;
+float botRotScale;
 boolean saveBox = false;
 boolean rotationBox = false;
 HashMap<BezierPoint, Double> rotation = new HashMap<BezierPoint, Double>();   // input last point of curve, returns bot rotation in RADIANS at that point
@@ -22,12 +23,15 @@ boolean savedDataBox = false;
 boolean enterPtLoc = false;
 boolean selectSaveFile = false;
 boolean saveNewDataBox = false;
+boolean skidding = false;
 String currentFileName = null;
 boolean simpleMode = true;
 ArrayList<String> saveFileNames = new ArrayList<String>();
-double botWidth, botHeight, botWeight, botMaxAccel, botWheelRadius;
+double botWidth, botHeight, botWeight, botMaxAccel, botWheelRadius, botDriveGearRatio, drag, fric, moment2, angResistance;
+boolean simulation = false;
 ArrayList<double[]> torque = new ArrayList<double[]>();
 TorqueCurve tCurve;
+Robot robot;
 YitSwitch simpleModeSwitch;
 void setup() {
   bg = loadImage("frcFieldCropped.png");
@@ -55,21 +59,20 @@ void setup() {
       sc.close();
     }
     sc = new Scanner(new File(dataPath("") + "/robot.stats")); 
-    String line;  
-    line = sc.nextLine();
-    botWidth = Double.parseDouble(line.substring(line.indexOf(":")+1).trim());
-    line = sc.nextLine();
-    botHeight = Double.parseDouble(line.substring(line.indexOf(":")+1).trim());
-    line = sc.nextLine();
-    botWeight = Double.parseDouble(line.substring(line.indexOf(":")+1).trim());
-    line = sc.nextLine();
-    botMaxAccel = Double.parseDouble(line.substring(line.indexOf(":")+1).trim());
-    line = sc.nextLine();
-    botWheelRadius = Double.parseDouble(line.substring(line.indexOf(":")+1).trim());
+    botWidth = getLineDouble(sc);
+    botHeight = getLineDouble(sc);
+    botWeight = getLineDouble(sc);
+    botMaxAccel = getLineDouble(sc);
+    botWheelRadius = getLineDouble(sc);
+    botDriveGearRatio = getLineDouble(sc);
+    drag = getLineDouble(sc);
+    fric = getLineDouble(sc);
+    angResistance = getLineDouble(sc);
+    moment2 = getLineDouble(sc);
     sc.nextLine();
     ArrayList<double[]> torque = new ArrayList<double[]>();
     while (sc.hasNextLine()) {
-      line = sc.nextLine().trim();
+      String line = sc.nextLine().trim();
       int ind = line.indexOf(",");
       if (ind != -1) {
         double[] a = {Double.parseDouble(line.substring(0, ind).trim()), Double.parseDouble(line.substring(ind+1).trim())};
@@ -89,4 +92,10 @@ void setup() {
   catch(Exception e) {
     e.printStackTrace();
   }
+  robot = new Robot(1, 0, .08, new Vector2D(0, 10), new Vector2D(10, 10));
+}
+
+double getLineDouble(Scanner sc){
+  String line = sc.nextLine();
+  return Double.parseDouble(line.substring(line.indexOf(":")+1).trim());
 }
