@@ -44,14 +44,20 @@ void draw() {
           strokeWeight(10);
           Vector2D pos = func.getPos((((double)(curTime - startTime)*speed/1000)%1000)/1000);
           if(simulation){
-            if((curTime-startTime)/1000 >= allPoints.size()){
+            Double rot;
+            if((curTime-startTime) >= ((double)allPoints.size()*1000000)/speed){
               BezierPoint[] pts = allPoints.get(allPoints.size()-1);
-              pos = pts[pts.length-1].getPos(0);
-            }
+              BezierPoint p = pts[pts.length-1];
+              pos = p.getPos(0);
+              rot = rotation.get(p);
+              if(rot == null)
+                rot = 0d;
+            }else
+              rot = getRotation((((double)(curTime - startTime)*speed/1000)%1000)/1000+i);
             if(i == (int)(((double)(curTime - startTime)*speed/1000)%(1000*allPoints.size()))/1000){
               point((float)pos.x, (float)pos.y);
               robot.setTargetPos(getFeetCoor(pos));
-              robot.setTargetRot(getRotation((((double)(curTime - startTime)*speed/1000)%1000)/1000+i));
+              robot.setTargetRot(rot);
             }
             robot.periodic();
           }else
@@ -184,6 +190,14 @@ void draw() {
       line((float)end.x, (float)end.y, (float)(end.x - arrowSize*Math.cos(m.getAngleRad() + Math.PI/4)), (float)(end.y - arrowSize*Math.sin(m.getAngleRad() + Math.PI/4)));
       line((float)end.x, (float)end.y, (float)(end.x - arrowSize*Math.cos(m.getAngleRad() - Math.PI/4)), (float)(end.y - arrowSize*Math.sin(m.getAngleRad() - Math.PI/4)));
     }
+    if (pidBox){
+      fill(255, 255, 255);
+      strokeWeight(1);
+      rect(0, 0, 300, 25);
+      fill(0, 0, 0);
+      text("Save name: " + typing, 10, 17);
+      
+    }
     if (keyPressed) {
       if (!keyPrevPressed && allPoints.size() > 0 && !saveBox && !enterPtLoc && !saveNewDataBox) {
         if (key == 'N' || key == 'n' || keyCode == RIGHT) {
@@ -310,6 +324,12 @@ void draw() {
             robot.reset();
             startTime = System.currentTimeMillis();
           }
+          keyPrevPressed = true;
+        }else if(key == 'p' || key == 'P'){
+          pidChar = 'p';
+          pidBox = !pidBox;
+          typing = "";
+          
           keyPrevPressed = true;
         }
           

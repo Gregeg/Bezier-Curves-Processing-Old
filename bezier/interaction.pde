@@ -7,6 +7,7 @@ void keyPressed() {
       enterPtLoc = false;
       saveNewDataBox = false;
       rotationBox = false;
+      pidBox = false;
       typing = "";
     }
     if (saveBox) {
