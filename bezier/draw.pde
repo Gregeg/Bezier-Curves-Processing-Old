@@ -44,6 +44,10 @@ void draw() {
           strokeWeight(10);
           Vector2D pos = func.getPos((((double)(curTime - startTime)*speed/1000)%1000)/1000);
           if(simulation){
+            if((curTime-startTime)/1000 >= allPoints.size()){
+              BezierPoint[] pts = allPoints.get(allPoints.size()-1);
+              pos = pts[pts.length-1].getPos(0);
+            }
             if(i == (int)(((double)(curTime - startTime)*speed/1000)%(1000*allPoints.size()))/1000){
               point((float)pos.x, (float)pos.y);
               robot.setTargetPos(getFeetCoor(pos));
@@ -299,8 +303,13 @@ void draw() {
         } else if ((key == 'r' || key == 'R') && allPoints.size() != 0 && allPoints.get(pointInd).length > 1){
           rotationBox = !rotationBox;
           keyPrevPressed = true;
-        }else if(key == ' '){
+        }else if(key == ' ' && allPoints.get(0).length > 1){
           simulation = !simulation;
+          if(simulation){
+            robot.setPos(getFeetCoor(allPoints.get(0)[0].getPos(0)));
+            robot.reset();
+            startTime = System.currentTimeMillis();
+          }
           keyPrevPressed = true;
         }
           

@@ -16,14 +16,17 @@ class Robot {
     double l = Math.sqrt(botWidth*botWidth + botHeight*botHeight);
     sinB = botHeight / l;
     cosB = botWidth / l;
-    prevTime = System.currentTimeMillis();
-    botSpeed = new Vector2D(0, 0);
     lastWheelPos = new Vector2D[4];
-    angularSpeed = 0;
-    botSpeed= new Vector2D(50, 0);
+    reset();
   }
   void resetTime(){
     prevTime = System.currentTimeMillis();
+  }
+  void reset(){
+    resetTime();
+    botSpeed = new Vector2D(0, 0.0001);
+    angularSpeed = 0;
+    rot = 0;
   }
   void periodic(){
     long curTime = System.currentTimeMillis();
@@ -77,6 +80,9 @@ class Robot {
   }
   void setTargetRot(double tr){
     targetRot = tr;
+  }
+  void setPos(Vector2D pos){
+    botPos = pos;
   }
   void setP(double p){this.p = p;}
   void setI(double i){this.i = i;}
