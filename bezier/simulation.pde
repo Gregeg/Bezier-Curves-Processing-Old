@@ -38,7 +38,14 @@ class Robot {
       eF = errP.scale(1/errP.getMagnitude());
     else
       eF = errP;
+    println("rot: " + rot);
+    println("targetRot: " + targetRot);
     double r = rot - targetRot;
+    r %= 2*PI;
+    if(r > 0)
+      r = (r < PI? r: r-2*PI);
+    else if(r < 0)
+      r = (r > -PI? r: -r-2*PI);
     if(r > 1)
       r = 1;
     else if(r < -1)
@@ -71,6 +78,7 @@ class Robot {
     double nAngularSpeed = angularSpeed + angleAccel*dt/1000;
     botPos = botPos.add(nBotSpeed.add(botSpeed).scale((double)dt/2000));
     rot += (nAngularSpeed + angularSpeed)/2;
+    rot %= 2*PI;
     botSpeed = nBotSpeed;
     angularSpeed = nAngularSpeed;
     prevTime = curTime; //<>//
@@ -79,6 +87,8 @@ class Robot {
     targetPos = pos;
   }
   void setTargetRot(double tr){
+    if(tr < 0)
+    tr += PI*2;
     targetRot = tr;
   }
   void setPos(Vector2D pos){
@@ -87,6 +97,10 @@ class Robot {
   void setP(double p){this.p = p;}
   void setI(double i){this.i = i;}
   void setD(double d){this.d = d;}
+  
+  double getP(){return p;}
+  double getI(){return i;}
+  double getD(){return d;}
   
   // rewrite of "move" method in SwerveMath.java, much more efficenct and compact
   // str = (both vars range<-1, 1>; forces relative to bot), rotPower = (rot power positive is cw), ang = (current angle in radians)

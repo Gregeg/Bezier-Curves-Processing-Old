@@ -9,6 +9,7 @@ int prevAllPointsPrevInd = 0;
 int mouseInd, pointInd;
 float botRotScale;
 boolean saveBox = false;
+boolean pidSaveBox = false;
 boolean rotationBox = false;
 HashMap<BezierPoint, Double> rotation = new HashMap<BezierPoint, Double>();   // input last point of curve, returns bot rotation in RADIANS at that point
 boolean savedBox = false;

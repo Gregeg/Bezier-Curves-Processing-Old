@@ -82,6 +82,31 @@ void keyPressed() {
       } else
         typing += key;
     }
+    if(pidBox){
+       if (key == '\n'){
+         double c = Double.parseDouble(typing.trim());
+         switch(pidChar){
+           case 'P':
+             robot.setP(c);
+             pidChar = 'I';
+             break;
+           case 'I':
+             robot.setI(c);
+             pidChar = 'D';
+             break;
+           case 'D':
+             robot.setD(c);
+             pidChar = null;
+             pidBox = false;
+             pidSaveBox = true;
+         }
+         typing = "";
+       }else
+         typing += key;
+    }
+    if (pidSaveBox)
+      if(key != '\n')
+         pidSaveBox = false;
     if (keyCode == BACKSPACE) {
       if (typing.length() <= 2)
         typing = "";

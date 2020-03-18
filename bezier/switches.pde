@@ -83,15 +83,18 @@ class YitButton {
   public Vector2D pos,size;
   String label;
   long downTime = 0;
-  YitButton(Vector2D pos, String label) {
+  Action action;
+  YitButton(Vector2D pos, String label, Action action) {
     this.label = label;
     this.pos = pos;
     this.size = new Vector2D(100,100);
+    this.action = action;
   }
-  YitButton(Vector2D pos, Vector2D size, String label) {
+  YitButton(Vector2D pos, Vector2D size, String label, Action action) {
     this.pos = pos; 
     this.size = size;
     this.label = label;
+    this.action = action;
   }
   
   void paint() {
@@ -108,5 +111,6 @@ class YitButton {
   
   void push() {
     downTime = System.currentTimeMillis(); 
+    action.execute();
   }
 }

@@ -7,9 +7,13 @@ void readSaveData() {
     boolean positions = true;
     while (sc.hasNextLine()) {
       String line = sc.nextLine();
-      if (line.charAt(0)=='R') {
+      if (line.charAt(0)=='P') {
         positions=false;
         ind = 0;
+        robot.setP(Double.parseDouble(sc.nextLine().trim()));
+        robot.setI(Double.parseDouble(sc.nextLine().trim()));
+        robot.setD(Double.parseDouble(sc.nextLine().trim()));
+        sc.nextLine();
       } else if (positions) {
         ArrayList<Double> a = new ArrayList<Double>();
         do {
@@ -50,7 +54,7 @@ void saveData() {
       line += allPoints.get(p)[i].getPos(0).x + "," + allPoints.get(p)[i].getPos(0).y + ",";
     greg.write(line.substring(0, line.length()-1) + "\n");
   }
-  greg.write("R\n");
+  greg.write("P\n" + robot.getP() + "\n" + robot.getI() + "\n" + robot.getD() + "\nR\n");
   for (int i = 0; i < allPoints.size(); i++) {
     BezierPoint[] pts = allPoints.get(i);
     if(pts.length > 1){

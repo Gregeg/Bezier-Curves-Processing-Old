@@ -31,6 +31,8 @@ void draw() {
       line((float)pt.x, 0, (float)pt.x, 700);
     }
     stroke(0, 0, 0);
+    if(pointInd < 0)
+      pointInd = 0;
     if (allPoints.size() > 0) {
       BezierPoint[] points = allPoints.get(pointInd);
       for (int i = 0; i < allPoints.size(); i++) {
@@ -193,10 +195,30 @@ void draw() {
     if (pidBox){
       fill(255, 255, 255);
       strokeWeight(1);
+      rect(0, 0, 200, 25);
+      fill(0, 0, 0);
+      double c;
+      switch(pidChar){
+        case 'P':
+          c = robot.getP();
+          break;
+        case 'I':
+          c = robot.getI();
+          break;
+        case 'D':
+          c = robot.getD();
+          break;
+        default:
+          c = 0;
+      }
+      text(pidChar + "(" + c + "): " + typing, 10, 17);
+    }
+    if(pidSaveBox) {
+      fill(255, 255, 255);
+      strokeWeight(1);
       rect(0, 0, 300, 25);
       fill(0, 0, 0);
-      text("Save name: " + typing, 10, 17);
-      
+      text("P:" + robot.getP() + " I:" + robot.getI() + " D:" + robot.getD() + " Press Esc to Close", 10, 17);
     }
     if (keyPressed) {
       if (!keyPrevPressed && allPoints.size() > 0 && !saveBox && !enterPtLoc && !saveNewDataBox) {
@@ -326,7 +348,7 @@ void draw() {
           }
           keyPrevPressed = true;
         }else if(key == 'p' || key == 'P'){
-          pidChar = 'p';
+          pidChar = 'P';
           pidBox = !pidBox;
           typing = "";
           
