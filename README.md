@@ -37,5 +37,10 @@
 ### Rotations
  - press "r" to move arrow at the the last endpoint of your curve
  - click to set the new arrow position, which represents the robot's rotation
+ 
+## Robot PID Simulation
+ - press "SPACE" to run a simulation of the robot following the position
+ - editing robot values
+   - change data on specific robot in data/robot.stats
 
 ### [Papers used for Bezier Curve research](https://www.cs.cornell.edu/courses/cs4620/2017sp/slides/16spline-curves.pdf)
