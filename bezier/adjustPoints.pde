@@ -1,4 +1,4 @@
-void adjustControlPoints(int pi, Vector2D dv, boolean up, int mouseInd) {//pi is point index?
+void adjustControlPoints(int pi, Vector2D dv, boolean up, int mouseInd) {//pi is point index
   BezierPoint[] points = allPoints.get(pi);
   if (allPoints.get(pi).length == 1)
     dv = new Vector2D(0, 0);

@@ -2,12 +2,16 @@ void keyPressed() {
   if (!selectSaveFile) {
     if (key==27) { // ESC
       key=0;
+      if(commandPosBox)
+        commands.remove(commands.size()-1);
       saveBox = false;
       savedBox = false;
       enterPtLoc = false;
       saveNewDataBox = false;
       rotationBox = false;
       pidBox = false;
+      commandBox = false;
+      commandPosBox = false;
       typing = "";
     }
     if (saveBox) {
@@ -17,8 +21,16 @@ void keyPressed() {
         if (file.exists())
           file.delete();
         PrintWriter output = createWriter("Points.java");
-        String out = "package frc.team578.robot.subsystems.swerve.motionProfiling;\nimport java.util.ArrayList;\npublic class Points{\n\tpublic static final double curvesPerSec = " 
-          + ((double)speed)/1000 + ";\n\tprivate static double[] getPoints0(){\n\t\tdouble[] d = {";
+        String out = "package frc.team578.robot.subsystems.swerve.motionProfiling;\nimport java.util.ArrayList;\nimport frc.team578.robot.commands.*;\npublic class Points{\n\tpublic static final double curvesPerSec = " 
+          + ((double)speed)/1000 + ";\n\tpublic static final int pointsPerCurve = " + amt + ";\n\n\t" + "protected class TimedCommand{\n\t\tpublic String name;\n\t\tpublic double t;\n\n\t\tprotected TimedCommand(String name, double t){" + 
+          "\n\t\t\tthis.name = name;\n\t\t\tthis.t = t;\n\t\t}\n\t\tpublic double getT(){\n\t\t\treturn t;\n\t\t}\n\t\tpublic String getName(){\n\t\t\treturn name;\n\t\t}\n\t}\n\n\t"
+          + "public static TimedCommand[] commands = {";
+        for(int i = 0; i < commands.size(); i++){
+          Command c = commands.get(i);
+          out += " new TimedCommand(\"" + c.getName() + "\", " + c.getT() + "),";
+        }
+        out = out.substring(0, out.length() - 1);
+        out += "};\n\tprivate static double[] getPoints0(){\n\t\tdouble[] d = {";
         int aLevel = 0;
         for (int i = 0; i < allPoints.size()*amt; i++) {
           int ptInd = i/amt;
@@ -107,12 +119,32 @@ void keyPressed() {
     if (pidSaveBox)
       if(key != '\n')
          pidSaveBox = false;
+    if(commandBox){
+      if(key == '\n'){
+        addCommand(typing);
+        typing = "";
+        commandBox = false;
+        commandPosBox = true;
+        commT = 0;
+        commandLeft = 0;
+        commandRight = 0;
+      }else
+        typing += key;
+      
+    }
+    if(commandPosBox && (key == 'c' || key == 'C')){
+        setCommandT(commT);
+        commandPosBox = false;
+        keyPrevPressed = true;
+    }
     if (keyCode == BACKSPACE) {
       if (typing.length() <= 2)
         typing = "";
       else
         typing = typing.substring(0, typing.length()-2);
     }
+    if(typing.length() > 0 && (keyCode == LEFT || keyCode == RIGHT || keyCode == UP || keyCode == DOWN))
+      typing = typing.substring(0, typing.length()-1);
   }
 }
 

@@ -1,6 +1,6 @@
 void draw() {
   speed=constrain(speed,0,Integer.MAX_VALUE);
-  botRotScale = (simulation? 2.5f: 1f);
+  botRotScale = (simulation? botSimSize: 1);
   if (selectSaveFile) {
     background(204);
     fill(0, 0, 0);
@@ -38,10 +38,18 @@ void draw() {
       for (int i = 0; i < allPoints.size(); i++) {
         if (allPoints.get(i).length >= 2) {
           BezierFunc func = new BezierFunc(allPoints.get(i));
+          
           strokeWeight(2);
           for (int x = 0; x < 1000; x++) {
             Vector2D pos = func.getPos(((float)x)/1000);
             point((float)pos.x, (float)pos.y);
+          }
+          strokeWeight(14);
+          if(commandPosBox && (int)commT == i){
+            stroke(0, 255, 255);
+            Vector2D pos = func.getPos(commT-i);
+            point((float)pos.x, (float)pos.y);
+            stroke(0, 0, 0);
           }
           strokeWeight(10);
           Vector2D pos = func.getPos((((double)(curTime - startTime)*speed/1000)%1000)/1000);
@@ -63,7 +71,8 @@ void draw() {
             }
             robot.periodic();
           }else
-            drawBot(pos, getRotation((((double)(curTime - startTime)*speed/1000)%1000)/1000+i) + Math.PI/2);
+            if(!commandPosBox)
+              drawBot(pos, getRotation((((double)(curTime - startTime)*speed/1000)%1000)/1000+i) + Math.PI/2);
         }
       }
       stroke(0, 200, 0);
@@ -83,6 +92,17 @@ void draw() {
         point((float)pt.x, (float)pt.y);
         prevPt = pt;
       }
+      strokeWeight(14);
+      stroke(0, 255, 255);
+      fill(0, 255, 255);
+      if(!commandPosBox)
+        for(int i = 0; i < commands.size(); i++){
+          Command c = commands.get(i);
+          BezierFunc func = new BezierFunc(allPoints.get((int)c.getT()));
+          Vector2D pos = func.getPos(c.getT()%1);
+          point((float)pos.x, (float)pos.y);
+          text(c.getName(), (float)pos.x + 15, (float)pos.y);
+        }
       stroke(255, 0, 0);
       strokeWeight(2);
       for (int p = 0; p < allPoints.size(); p++) {
@@ -220,9 +240,23 @@ void draw() {
       fill(0, 0, 0);
       text("P:" + robot.getP() + " I:" + robot.getI() + " D:" + robot.getD() + " Press Esc to Close", 10, 17);
     }
+    if(commandBox){
+      fill(255, 255, 255);
+      strokeWeight(1);
+      rect(0, 0, 400, 25);
+      fill(0, 0, 0);
+      text("Command class name: " + typing, 10, 17);
+    }
+    if(commandPosBox){
+      fill(255, 255, 255);
+      strokeWeight(1);
+      rect(0, 0, 300, 25);
+      fill(0, 0, 0);
+      text("use arrow keys and press \"C\" for position" + typing, 10, 17);
+    }
     if (keyPressed) {
-      if (!keyPrevPressed && allPoints.size() > 0 && !saveBox && !enterPtLoc && !saveNewDataBox) {
-        if (key == 'N' || key == 'n' || keyCode == RIGHT) {
+      if (!keyPrevPressed && allPoints.size() > 0 && !saveBox && !enterPtLoc && !saveNewDataBox && !commandBox && !pidBox && !commandPosBox) {
+        if (!commandPosBox && (key == 'N' || key == 'n' || keyCode == RIGHT)) {
           allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
           if (allPoints.get(pointInd).length > 2) {
             pointInd++;
@@ -234,7 +268,7 @@ void draw() {
             allPoints.remove(0);
           }
           keyPrevPressed = true;
-        } else if (key == 'B' || key == 'b' || keyCode == LEFT) {
+        } else if (!commandPosBox && (key == 'B' || key == 'b' || keyCode == LEFT)) {
           if (pointInd != 0) {
             if (pointInd == allPoints.size()-1 && allPoints.get(pointInd).length == 1) {
               allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
@@ -255,8 +289,18 @@ void draw() {
             allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
             if (pointInd == 0) {
               allPoints.remove(0);
+              for(int i = 0; i < commands.size(); i++)
+                if((int)commands.get(i).getT() == 0){
+                  commands.remove(i);
+                  i--;
+                }
             } else if (pointInd == allPoints.size()-1) {
               allPoints.remove(pointInd);
+              for(int i = 0; i < commands.size(); i++)
+                if((int)commands.get(i).getT() == pointInd){
+                  commands.remove(i);
+                  i--;
+                }
               pointInd--;
             }
           } else if (points.length > 3) {
@@ -270,22 +314,37 @@ void draw() {
                 lowInd = i;
               }
             }
-            if (lowInd == 1)
-              adjustControlPoints(pointInd, points[2].getPos(0).add(points[1].getPos(0).scale(-1)), false, 1);
-            else if (lowInd == points.length-2)
-              adjustControlPoints(pointInd, points[points.length-3].getPos(0).add(points[points.length-2].getPos(0).scale(-1)), true, points.length-2);
-            BezierPoint[] temp = new BezierPoint[points.length-1];
-            int i = 0;
-            boolean skipped = false;
-            while (i < points.length) {
-              if (i == lowInd) {
-                i++;
-                skipped = true;
+            double lowDistComm = Double.MAX_VALUE;
+            int lowIndComm = -1;
+            for(int i = 0; i < commands.size(); i++){
+              double t = commands.get(i).getT();
+              BezierFunc func = new BezierFunc(allPoints.get((int)t));
+              double dist = mouse.add(func.getPos(t%1).scale(-1)).getMagnitude();
+              if(dist < lowDistComm){
+                lowDistComm = dist;
+                lowIndComm = i;
               }
-              temp[i - (skipped? 1: 0)] = points[i];
-              i++;
             }
-            allPoints.set(pointInd, temp);
+            if(lowIndComm != -1 && lowDistComm < lowDist)
+              commands.remove(lowIndComm);
+            else{
+              if (lowInd == 1)
+                adjustControlPoints(pointInd, points[2].getPos(0).add(points[1].getPos(0).scale(-1)), false, 1);
+              else if (lowInd == points.length-2)
+                adjustControlPoints(pointInd, points[points.length-3].getPos(0).add(points[points.length-2].getPos(0).scale(-1)), true, points.length-2);
+              BezierPoint[] temp = new BezierPoint[points.length-1];
+              int i = 0;
+              boolean skipped = false;
+              while (i < points.length) {
+                if (i == lowInd) {
+                  i++;
+                  skipped = true;
+                }
+                temp[i - (skipped? 1: 0)] = points[i];
+                i++;
+              }
+              allPoints.set(pointInd, temp);
+            }
           } else if (allPoints.size() == 1) {
             int lowInd = 0;
             if (points.length != 1) {
@@ -351,13 +410,42 @@ void draw() {
           pidChar = 'P';
           pidBox = !pidBox;
           typing = "";
-          
+          keyPrevPressed = true;
+        }else if(allPoints.get(pointInd).length > 1 && (key == 'c' || key == 'C')){
+          commandBox = true;
+          typing = "";
           keyPrevPressed = true;
         }
-          
-      } 
+      }
+      if(commandPosBox){
+          if(keyCode == LEFT){
+            if(commandLeft > 75)
+              commT -= .04;
+            else if(commandLeft > 45)
+              commT -= .02;
+            else
+              commT -= .0025;
+            if(commT < 0)
+              commT = 0;
+            commandLeft++;
+            commandRight = 0;
+          }else if(keyCode == RIGHT){
+            if(commandRight > 75)
+              commT += .04;
+            else if(commandRight > 45)
+              commT += .02;
+            else
+              commT += .0025;
+            if(commT >= allPoints.size())
+              commT = allPoints.size() - .0000001;
+            commandRight++;
+            commandLeft = 0;
+          }
+        }
     } else {
       keyPrevPressed = false;
+      commandLeft = 0;
+      commandRight = 0;
     }
     simpleModeSwitch.paint();
   }

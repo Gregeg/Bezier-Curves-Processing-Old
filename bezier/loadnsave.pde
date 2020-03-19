@@ -13,7 +13,20 @@ void readSaveData() {
         robot.setP(Double.parseDouble(sc.nextLine().trim()));
         robot.setI(Double.parseDouble(sc.nextLine().trim()));
         robot.setD(Double.parseDouble(sc.nextLine().trim()));
+        line = sc.nextLine();
+        int ind2;
+        do {
+          ind = line.indexOf(',');
+          ind2 = line.indexOf(',', ind+1);
+          if (ind2 == -1) {
+            commands.add(new Command(line.substring(0, ind), Double.parseDouble(line.substring(ind+1))));
+          } else {
+            commands.add(new Command(line.substring(0, ind), Double.parseDouble(line.substring(ind+1, ind2))));
+            line = line.substring(ind2+1);
+          }
+        } while (ind2 != -1);
         sc.nextLine();
+        ind = 0;
       } else if (positions) {
         ArrayList<Double> a = new ArrayList<Double>();
         do {
@@ -39,7 +52,7 @@ void readSaveData() {
     sc.close();
   }
   catch(Exception e) {
-    System.err.println("greg file not detected");
+    e.printStackTrace();
   }
 }
 void saveData() {
@@ -54,7 +67,11 @@ void saveData() {
       line += allPoints.get(p)[i].getPos(0).x + "," + allPoints.get(p)[i].getPos(0).y + ",";
     greg.write(line.substring(0, line.length()-1) + "\n");
   }
-  greg.write("P\n" + robot.getP() + "\n" + robot.getI() + "\n" + robot.getD() + "\nR\n");
+  greg.write("P\n" + robot.getP() + "\n" + robot.getI() + "\n" + robot.getD() + "\n");
+  String line = "";
+  for(int i = 0; i < commands.size(); i++)
+    line += commands.get(i).getName() + "," + commands.get(i).getT() + ",";
+  greg.write(line.substring(0, line.length()-1) + "\nR\n");
   for (int i = 0; i < allPoints.size(); i++) {
     BezierPoint[] pts = allPoints.get(i);
     if(pts.length > 1){
