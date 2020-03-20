@@ -257,26 +257,29 @@ void draw() {
     if (keyPressed) {
       if (!keyPrevPressed && allPoints.size() > 0 && !saveBox && !enterPtLoc && !saveNewDataBox && !commandBox && !pidBox && !commandPosBox) {
         if (!commandPosBox && (key == 'N' || key == 'n' || keyCode == RIGHT)) {
-          allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
           if (allPoints.get(pointInd).length > 2) {
             pointInd++;
             if (pointInd == allPoints.size()) {
+               addState();
               allPoints.add(new BezierPoint[1]);
               allPoints.get(pointInd)[0] = allPoints.get(pointInd-1)[allPoints.get(pointInd-1).length-1];
             }
           } else if (pointInd == 0 && allPoints.size() > 1) {
+            addState();
+            changeAllCommandT(-1);
             allPoints.remove(0);
           }
           keyPrevPressed = true;
         } else if (!commandPosBox && (key == 'B' || key == 'b' || keyCode == LEFT)) {
           if (pointInd != 0) {
             if (pointInd == allPoints.size()-1 && allPoints.get(pointInd).length == 1) {
-              allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+              addState();
               allPoints.remove(pointInd);
             }
             pointInd--;
           } else if (allPoints.size() > 0 && allPoints.get(0).length > 2){
-            allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+            addState();
+            changeAllCommandT(1);
             allPoints.add(0, new BezierPoint[1]);
             allPoints.get(0)[0] = allPoints.get(1)[0];
           }
@@ -286,7 +289,7 @@ void draw() {
           // deletes nearest point, if start or end and deletes point with point length of 3, delete entire curve segment,
           // cannot delete middle segment point if segment has 3 points
           if (points.length == 3) {
-            allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+            addState();
             if (pointInd == 0) {
               allPoints.remove(0);
               for(int i = 0; i < commands.size(); i++)
@@ -294,6 +297,7 @@ void draw() {
                   commands.remove(i);
                   i--;
                 }
+                changeAllCommandT(-1);
             } else if (pointInd == allPoints.size()-1) {
               allPoints.remove(pointInd);
               for(int i = 0; i < commands.size(); i++)
@@ -304,7 +308,7 @@ void draw() {
               pointInd--;
             }
           } else if (points.length > 3) {
-            allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+            addState();
             double lowDist = points[1].getPos(0).add(mouse.scale(-1)).getMagnitude();
             int lowInd = 1;
             for (int i = 2; i < points.length-1; i++) {
@@ -357,7 +361,7 @@ void draw() {
                 }
               }
             }
-            allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+            addState();
             if (points.length == 2) {
               BezierPoint[] temp = {points[1-lowInd]};
               allPoints.set(0, temp);
@@ -382,18 +386,8 @@ void draw() {
           }
         } else if (key == 'a' || key == 'A')
           enterPtLoc = true;
-        else if (key == 26){
-          if(allPointsPrev.size() > 0){
-            allPoints = allPointsPrev.remove(allPointsPrev.size()-1);
-            if(allPoints.size() == 0)
-              pointInd = 0;
-            else if(allPoints.size() == pointInd)
-              pointInd = allPoints.size()-1;
-            if(simpleMode){
-              allPoints.remove(pointInd);
-              pointInd--;
-            }
-          }
+        else if (key == 26){       // UNDO
+          restoreState();
           keyPrevPressed = true;
         } else if ((key == 'r' || key == 'R') && allPoints.size() != 0 && allPoints.get(pointInd).length > 1){
           rotationBox = !rotationBox;

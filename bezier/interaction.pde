@@ -133,6 +133,7 @@ void keyPressed() {
       
     }
     if(commandPosBox && (key == 'c' || key == 'C')){
+        addState();
         setCommandT(commT);
         commandPosBox = false;
         keyPrevPressed = true;
@@ -198,7 +199,7 @@ void mouseReleased() {
         if(simulation)
           robot.resetTime();
         if(!simpleMode)
-          allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+          addState();
         if (!simpleMode || allPoints.size() == 0) {
           if (allPoints.size() == 0) {
             allPoints.add(new BezierPoint[1]);
@@ -243,7 +244,7 @@ void mouseReleased() {
           if (allPoints.get(pointInd).length < 4) {
             BezierPoint[] points = allPoints.get(pointInd);
             if (points.length == 1) {
-              allPointsPrev.add(new ArrayList<BezierPoint[]>(allPoints));
+              addState();
               if (pointInd == 0) {
                 if (allPoints.size() == 1) {
                   BezierPoint[] temp = new BezierPoint[2];

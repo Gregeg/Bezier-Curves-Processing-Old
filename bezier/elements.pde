@@ -1,4 +1,5 @@
 ArrayList<Command> commands = new ArrayList<Command>();
+ArrayList<PointState> states = new ArrayList<PointState>();
 
 void drawBot(Vector2D pos, double rot) {
   pushMatrix();
@@ -41,4 +42,42 @@ class Command{
   
   String getName(){return name;}
   double getT(){return t;}
+}
+
+void changeAllCommandT(double v){
+  for(int i = 0; i < commands.size(); i++)
+    commands.get(i).setT(commands.get(i).getT() + v);
+}
+
+class PointState {
+  ArrayList<BezierPoint[]> allPts;
+  ArrayList<Command> comms;
+  
+  PointState(ArrayList<BezierPoint[]> allPts, ArrayList<Command> comms){
+    this.allPts = new ArrayList<BezierPoint[]>(allPts);
+    this.comms = new ArrayList<Command>(comms);
+  }
+  
+  ArrayList<BezierPoint[]> getAllPts(){return allPts;}
+  ArrayList<Command> getComms(){return comms;}
+}
+
+void addState(){
+  states.add(new PointState(allPoints, commands));
+}
+
+void restoreState(){
+  if(states.size() != 0){
+    PointState ps = states.remove(states.size()-1);
+    allPoints = ps.getAllPts();
+    commands = ps.getComms();
+    if(allPoints.size() == 0)
+      pointInd = 0;
+    else if(pointInd == allPoints.size())
+      pointInd--;
+    if(simpleMode){
+       allPoints.remove(pointInd);
+       pointInd--;
+    }
+  }
 }
