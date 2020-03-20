@@ -27,7 +27,7 @@ void keyPressed() {
         }
         PrintWriter output = createWriter("Points.java");
         String out = "package frc.team578.robot.subsystems.swerve.motionProfiling;\nimport java.util.ArrayList;\nimport frc.team578.robot.commands.*;\npublic class Points{\n\tpublic static final double curvesPerSec = " 
-          + ((double)speed)/1000 + ";\n\tpublic static final int pointsPerCurve = " + amt + ";\n\n\t" + "protected class TimedCommand{\n\t\tpublic String name;\n\t\tpublic double t;\n\n\t\tprotected TimedCommand(String name, double t){" + 
+          + ((double)speed)/1000 + ";\n\tpublic static final int pointsPerCurve = " + amt + ";\n\n\t" + "protected static class TimedCommand{\n\t\tpublic String name;\n\t\tpublic double t;\n\n\t\tprotected TimedCommand(String name, double t){" + 
           "\n\t\t\tthis.name = name;\n\t\t\tthis.t = t;\n\t\t}\n\t\tpublic double getT(){\n\t\t\treturn t;\n\t\t}\n\t\tpublic String getName(){\n\t\t\treturn name;\n\t\t}\n\t}\n\n\t"
           + "public static TimedCommand[] commands = {";
         for(int i = 0; i < commands.size(); i++){
