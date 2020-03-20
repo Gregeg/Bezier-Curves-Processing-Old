@@ -15,11 +15,16 @@ void keyPressed() {
       typing = "";
     }
     if (saveBox) {
-      if (key == '\n') {
+      if (key == '\n' ) {
         int amt = Integer.parseInt(typing);
         File file = new File("Points.java");
         if (file.exists())
           file.delete();
+        if(allPoints.get(pointInd).length == 1) {
+          allPoints.remove(pointInd);
+          if(pointInd != 0)
+            pointInd--;
+        }
         PrintWriter output = createWriter("Points.java");
         String out = "package frc.team578.robot.subsystems.swerve.motionProfiling;\nimport java.util.ArrayList;\nimport frc.team578.robot.commands.*;\npublic class Points{\n\tpublic static final double curvesPerSec = " 
           + ((double)speed)/1000 + ";\n\tpublic static final int pointsPerCurve = " + amt + ";\n\n\t" + "protected class TimedCommand{\n\t\tpublic String name;\n\t\tpublic double t;\n\n\t\tprotected TimedCommand(String name, double t){" + 
