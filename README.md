@@ -41,6 +41,11 @@
  - press "r" to move arrow at the the last endpoint of your curve
  - click to set the new arrow position, which represents the robot's rotation
  
+### Run Command in Robot Code
+ - press "C" and type the name of your command class and press "ENTER" EX: for ShootBall.java type `ShootBall`
+ - use the left/right arrow keys to move your control dot along the curve, and press "C" to lock it in place
+ - the robot will run the `execute()` method when it reaches this point
+ 
 ### Robot PID Simulation
  - press "SPACE" to run a simulation of the robot following the position
  - editing robot values
