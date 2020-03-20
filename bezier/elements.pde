@@ -26,7 +26,7 @@ void setCommandT(double t){
   commands.get(commands.size()-1).setT(t);
 }
 
-class Command{
+class Command implements Comparable{
   private String name;
   private double t;
   
@@ -42,6 +42,12 @@ class Command{
   
   String getName(){return name;}
   double getT(){return t;}
+  
+  public int compareTo(Object o){
+    Command c = (Command)o;
+    double v = t-c.getT();
+    return (v > 0? 1: (v == 0? 0: -1));
+  }
 }
 
 void changeAllCommandT(double v){

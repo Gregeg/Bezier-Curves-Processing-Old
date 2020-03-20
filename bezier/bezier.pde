@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.function.Function;
+import java.util.Collections;
 // lit functional programming stuff https://softwareengineering.stackexchange.com/questions/276859/what-is-the-name-of-a-function-that-takes-no-argument-and-returns-nothing
 ArrayList<BezierPoint[]> allPoints = new ArrayList<BezierPoint[]>();
 PImage bg, sOff, sOn, botrot;

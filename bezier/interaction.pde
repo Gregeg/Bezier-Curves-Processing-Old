@@ -25,13 +25,15 @@ void keyPressed() {
           if(pointInd != 0)
             pointInd--;
         }
+        ArrayList<Command> sortedComms = new ArrayList<Command>(commands);
+        Collections.sort(sortedComms);
         PrintWriter output = createWriter("Points.java");
         String out = "package frc.team578.robot.subsystems.swerve.motionProfiling;\nimport java.util.ArrayList;\nimport frc.team578.robot.commands.*;\npublic class Points{\n\tpublic static final double curvesPerSec = " 
           + ((double)speed)/1000 + ";\n\tpublic static final int pointsPerCurve = " + amt + ";\n\n\t" + "protected static class TimedCommand{\n\t\tpublic String name;\n\t\tpublic double t;\n\n\t\tprotected TimedCommand(String name, double t){" + 
           "\n\t\t\tthis.name = name;\n\t\t\tthis.t = t;\n\t\t}\n\t\tpublic double getT(){\n\t\t\treturn t;\n\t\t}\n\t\tpublic String getName(){\n\t\t\treturn name;\n\t\t}\n\t}\n\n\t"
           + "public static TimedCommand[] commands = {";
-        for(int i = 0; i < commands.size(); i++){
-          Command c = commands.get(i);
+        for(int i = 0; i < sortedComms.size(); i++){
+          Command c = sortedComms.get(i);
           out += " new TimedCommand(\"" + c.getName() + "\", " + c.getT() + "),";
         }
         out = out.substring(0, out.length() - 1);
